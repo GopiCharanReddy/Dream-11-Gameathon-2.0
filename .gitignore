@@ -1,0 +1,46 @@
+# Backup folders
+backup/
+old_data/
+old_models/
+
+# Virtual Environment
+venv/
+env/
+.venv/
+.env/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+
+# Large model files that shouldn't be in version control
+*.h5
+*.pkl
+*.joblib
+
+# Allow explicit models we want to keep
+!models/performance_model.joblib 
