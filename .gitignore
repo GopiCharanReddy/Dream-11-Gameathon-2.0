@@ -9,6 +9,9 @@ env/
 .venv/
 .env/
 
+# Output directory
+output/
+
 # Python cache files
 __pycache__/
 *.py[cod]
