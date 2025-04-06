@@ -1,0 +1,132 @@
+{
+  "summary": {
+    "total_credits": 87.0,
+    "total_predicted_score": 98.12049665491354,
+    "role_distribution": {
+      "BAT": 6,
+      "BOWL": 2,
+      "AR": 2,
+      "WK": 1
+    },
+    "team_distribution": {
+      "GT": 6,
+      "RCB": 5
+    },
+    "captain": "Sai Sudharsan",
+    "vice_captain": "Shubman Gill",
+    "timestamp": "20250405_233220",
+    "model_accuracy": 68.9
+  },
+  "team": [
+    {
+      "player_name": "Sai Sudharsan",
+      "role": "BAT",
+      "team": "GT",
+      "credits": 8.5,
+      "lineup_order": 2,
+      "predicted_score": 9.895649305003333,
+      "Captain": true,
+      "Vice Captain": false
+    },
+    {
+      "player_name": "Shubman Gill",
+      "role": "BAT",
+      "team": "GT",
+      "credits": 9.0,
+      "lineup_order": 1,
+      "predicted_score": 9.560986419880233,
+      "Captain": false,
+      "Vice Captain": true
+    },
+    {
+      "player_name": "Jitesh Sharma",
+      "role": "BAT",
+      "team": "RCB",
+      "credits": 7.5,
+      "lineup_order": 6,
+      "predicted_score": 9.529129987757685,
+      "Captain": false,
+      "Vice Captain": false
+    },
+    {
+      "player_name": "Ishant Sharma",
+      "role": "BOWL",
+      "team": "GT",
+      "credits": 7.0,
+      "lineup_order": 11,
+      "predicted_score": 9.522413492306487,
+      "Captain": false,
+      "Vice Captain": false
+    },
+    {
+      "player_name": "Rahul Tewatia",
+      "role": "AR",
+      "team": "GT",
+      "credits": 7.0,
+      "lineup_order": 5,
+      "predicted_score": 9.134650624664252,
+      "Captain": false,
+      "Vice Captain": false
+    },
+    {
+      "player_name": "Virat Kohli",
+      "role": "BAT",
+      "team": "RCB",
+      "credits": 9.0,
+      "lineup_order": 1,
+      "predicted_score": 8.88968561538823,
+      "Captain": false,
+      "Vice Captain": false
+    },
+    {
+      "player_name": "Rajat Patidar",
+      "role": "BAT",
+      "team": "RCB",
+      "credits": 8.0,
+      "lineup_order": 4,
+      "predicted_score": 8.854103706290996,
+      "Captain": false,
+      "Vice Captain": false
+    },
+    {
+      "player_name": "Tim David",
+      "role": "BAT",
+      "team": "RCB",
+      "credits": 7.5,
+      "lineup_order": 7,
+      "predicted_score": 8.654611643084447,
+      "Captain": false,
+      "Vice Captain": false
+    },
+    {
+      "player_name": "Ravisrinivasan Sai Kishore",
+      "role": "BOWL",
+      "team": "GT",
+      "credits": 7.5,
+      "lineup_order": 8,
+      "predicted_score": 8.586687569331815,
+      "Captain": false,
+      "Vice Captain": false
+    },
+    {
+      "player_name": "Shahrukh Khan",
+      "role": "AR",
+      "team": "GT",
+      "credits": 7.5,
+      "lineup_order": 4,
+      "predicted_score": 7.906038071448443,
+      "Captain": false,
+      "Vice Captain": false
+    },
+    {
+      "player_name": "Philip Salt",
+      "role": "WK",
+      "team": "RCB",
+      "credits": 8.5,
+      "lineup_order": 2,
+      "predicted_score": 7.586540219757615,
+      "Captain": false,
+      "Vice Captain": false
+    }
+  ]
+}

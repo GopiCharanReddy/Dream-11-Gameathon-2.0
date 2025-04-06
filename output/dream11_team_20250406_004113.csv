@@ -1,0 +1,12 @@
+player_name,role,team,credits,lineup_order,predicted_score,Captain,Vice Captain
+Shahrukh Khan,AR,GT,7.5,4,9.922369376838034,True,False
+Yash Dayal,BOWL,RCB,7.0,11,9.465742085120684,False,True
+Sai Sudharsan,BAT,GT,8.5,2,9.280272697991013,False,False
+Arshad Khan,AR,GT,6.0,6,8.946871467165467,False,False
+Mohammed Siraj,BOWL,GT,8.0,9,8.845898875042925,False,False
+Ishant Sharma,BOWL,GT,7.0,11,8.772707672707934,False,False
+Jos Buttler,BAT,GT,9.0,3,8.712503736671962,False,False
+Devdutt Padikkal,BAT,RCB,7.0,3,8.463463642765234,False,False
+Rajat Patidar,BAT,RCB,8.0,4,8.204489070538065,False,False
+Rashid-Khan,BOWL,GT,9.0,7,7.874241040806945,False,False
+Philip Salt,WK,RCB,8.5,2,5.0648618679889985,False,False

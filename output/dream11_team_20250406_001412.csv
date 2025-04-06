@@ -1,0 +1,12 @@
+player_name,role,team,credits,lineup_order,predicted_score,Captain,Vice Captain
+Rajat Patidar,BAT,RCB,8.0,4,9.666360235325723,True,False
+Ishant Sharma,BOWL,GT,7.0,11,9.628028619342148,False,True
+Shahrukh Khan,AR,GT,7.5,4,8.908389069392843,False,False
+Sai Sudharsan,BAT,GT,8.5,2,8.753350600851675,False,False
+Philip Salt,WK,RCB,8.5,2,8.38775933292732,False,False
+Arshad Khan,AR,GT,6.0,6,8.309100448430172,False,False
+Bhuvneshwar Kumar,BOWL,RCB,8.0,9,8.219882521638322,False,False
+Rahul Tewatia,AR,GT,7.0,5,8.202936454807185,False,False
+Rashid-Khan,BOWL,GT,9.0,7,7.909109195416767,False,False
+Liam Livingstone,AR,RCB,8.0,5,7.252277755988185,False,False
+Devdutt Padikkal,BAT,RCB,7.0,3,7.149107811025423,False,False

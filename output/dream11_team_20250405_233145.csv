@@ -1,0 +1,12 @@
+player_name,role,team,credits,lineup_order,predicted_score,Captain,Vice Captain
+Virat Kohli,BAT,RCB,9.0,1,9.744847848622975,True,False
+Ishant Sharma,BOWL,GT,7.0,11,9.680477467376924,False,True
+Yash Dayal,BOWL,RCB,7.0,11,9.60017115971721,False,False
+Arshad Khan,AR,GT,6.0,6,9.544727723198221,False,False
+Philip Salt,WK,RCB,8.5,2,9.500373514116292,False,False
+Liam Livingstone,AR,RCB,8.0,5,9.395153232774053,False,False
+Sai Sudharsan,BAT,GT,8.5,2,9.163852990521155,False,False
+Krunal Pandya,AR,RCB,7.5,8,8.964440841020693,False,False
+Shahrukh Khan,AR,GT,7.5,4,8.914176983081067,False,False
+Rashid-Khan,BOWL,GT,9.0,7,8.809597487517788,False,False
+Shubman Gill,BAT,GT,9.0,1,7.879270778028578,False,False

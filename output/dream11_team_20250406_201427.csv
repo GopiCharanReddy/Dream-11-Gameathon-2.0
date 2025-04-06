@@ -1,0 +1,12 @@
+player_name,role,team,credits,lineup_order,predicted_score,Captain,Vice Captain
+Jos Buttler,WK,GT,9.0,3,8.754278485885937,True,False
+Prasidh Krishna,BOWL,GT,7.5,10,8.711275817885795,False,True
+Pat Cummins,BOWL,SRH,8.0,8,8.658836821773725,False,False
+Rashid-Khan,BOWL,GT,8.5,6,8.412772428135025,False,False
+K Nitish Reddy,AR,SRH,8.0,4,8.212668634742457,False,False
+Ishan Kishan,BAT,SRH,8.0,3,8.148910836203552,False,False
+Mohammed Shami,BOWL,SRH,8.5,11,7.509491853251579,False,False
+Sai Sudharsan,BAT,GT,8.5,2,7.495321429638658,False,False
+Shubman Gill,BAT,GT,9.0,1,7.403476717393145,False,False
+Travis Head,BAT,SRH,9.0,1,7.188495834124071,False,False
+Heinrich Klaasen,BAT,SRH,9.0,5,7.0521331987433875,False,False

@@ -1,0 +1,12 @@
+player_name,role,team,credits,lineup_order,predicted_score,Captain,Vice Captain
+Bhuvneshwar Kumar,BOWL,RCB,8.0,9,9.938093024053405,True,False
+Philip Salt,WK,RCB,8.5,2,9.63390217938668,False,True
+Mohammed Siraj,BOWL,GT,8.0,9,9.395638458880692,False,False
+Rashid-Khan,BOWL,GT,9.0,7,9.213327802251888,False,False
+Sai Sudharsan,BAT,GT,8.5,2,9.05482310691772,False,False
+Josh Hazlewood,BOWL,RCB,8.5,10,8.957020403907249,False,False
+Prasidh Krishna,BOWL,GT,7.5,10,8.695806425783934,False,False
+Yash Dayal,BOWL,RCB,7.0,11,8.688174637891024,False,False
+Jos Buttler,BAT,GT,9.0,3,8.658763037402608,False,False
+Rahul Tewatia,AR,GT,7.0,5,8.258258415976304,False,False
+Tim David,BAT,RCB,7.5,7,8.254517335864048,False,False

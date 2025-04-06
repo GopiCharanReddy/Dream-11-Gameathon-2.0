@@ -1,0 +1,12 @@
+player_name,role,team,credits,lineup_order,predicted_score,Captain,Vice Captain
+Pat Cummins,BOWL,SRH,8.0,8,9.937237173265324,True,False
+K Nitish Reddy,AR,SRH,8.0,4,9.72574704903307,False,True
+Abhishek Sharma,AR,SRH,8.5,2,9.718341146407582,False,False
+Jaydev Unadkat,BOWL,SRH,7.0,10,9.215224548999803,False,False
+Mohammed Siraj,BOWL,GT,8.0,9,8.965635753385735,False,False
+Washington Sundar,AR,GT,7.0,7,8.890622254366239,False,False
+Rahul Tewatia,AR,GT,7.0,4,8.737774316593677,False,False
+Travis Head,BAT,SRH,9.0,1,8.123351241975323,False,False
+Shubman Gill,BAT,GT,9.0,1,7.713191973921363,False,False
+Sai Sudharsan,BAT,GT,8.5,2,7.625687441219589,False,False
+Jos Buttler,WK,GT,9.0,3,7.30231477229792,False,False

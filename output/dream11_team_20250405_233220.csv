@@ -1,0 +1,12 @@
+player_name,role,team,credits,lineup_order,predicted_score,Captain,Vice Captain
+Sai Sudharsan,BAT,GT,8.5,2,9.895649305003333,True,False
+Shubman Gill,BAT,GT,9.0,1,9.560986419880233,False,True
+Jitesh Sharma,BAT,RCB,7.5,6,9.529129987757685,False,False
+Ishant Sharma,BOWL,GT,7.0,11,9.522413492306487,False,False
+Rahul Tewatia,AR,GT,7.0,5,9.134650624664252,False,False
+Virat Kohli,BAT,RCB,9.0,1,8.88968561538823,False,False
+Rajat Patidar,BAT,RCB,8.0,4,8.854103706290996,False,False
+Tim David,BAT,RCB,7.5,7,8.654611643084447,False,False
+Ravisrinivasan Sai Kishore,BOWL,GT,7.5,8,8.586687569331815,False,False
+Shahrukh Khan,AR,GT,7.5,4,7.906038071448443,False,False
+Philip Salt,WK,RCB,8.5,2,7.586540219757615,False,False

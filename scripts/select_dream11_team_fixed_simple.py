@@ -8,6 +8,7 @@ import sys
 from datetime import datetime
 from fuzzywuzzy import fuzz
 from sklearn.preprocessing import StandardScaler
+import argparse
 
 # Add the parent directory to the path so we can import the models package
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -54,131 +55,91 @@ class Dream11TeamSelector:
         }
         return pd.DataFrame(sample_data)
 
-    def _fetch_lineup_from_sheets(self):
-        """Fetch player lineup from local CSV."""
+    def fetch_lineup(self, verbose=False):
+        """Fetch lineup data from local file."""
         try:
-            # Try to read from a local CSV file
-            local_file = 'data/latest_lineup.csv'
-            if os.path.exists(local_file):
-                if self.verbose:
-                    print(f"Reading lineup from local file: {local_file}")
+            # Read lineup from local file
+            if verbose:
+                print("Reading lineup from local file: data/latest_lineup.csv")
+            
+            # Skip the first row (A,B,C,D,E,F) and use the second row as headers
+            lineup_df = pd.read_csv('data/latest_lineup.csv', skiprows=[0])
+            
+            if verbose:
+                print("Detected new format CSV")
+            
+            # Filter only playing players
+            lineup_df = lineup_df[lineup_df['IsPlaying'] == 'PLAYING']
+            
+            # Standardize column names
+            lineup_df = lineup_df.rename(columns={
+                'Player Name': 'player_name',
+                'Team': 'team',
+                'Player Type': 'role',
+                'Credits': 'credits',
+                'lineupOrder': 'lineup_order'
+            })
+            
+            # Convert credits to float
+            lineup_df['credits'] = pd.to_numeric(lineup_df['credits'], errors='coerce')
+            
+            # Convert lineup_order to numeric
+            lineup_df['lineup_order'] = pd.to_numeric(lineup_df['lineup_order'], errors='coerce')
+            
+            # Standardize role values
+            role_mapping = {
+                'BAT': 'BAT',
+                'BOWL': 'BOWL',
+                'AR': 'AR',
+                'ALL': 'AR',
+                'WK': 'WK'
+            }
+            lineup_df['role'] = lineup_df['role'].map(role_mapping).fillna('UNKNOWN')
+            
+            # Count wicketkeepers
+            wk_count = len(lineup_df[lineup_df['role'] == 'WK'])
+            if wk_count > 1:
+                if verbose:
+                    print(f"Found {wk_count} wicketkeepers in lineup, need to adjust")
                 
-                # Read the file with skiprows to handle the header format
-                lineup_df = pd.read_csv(local_file, skiprows=1)
+                # Convert excess wicketkeepers to batsmen, keeping the highest credit WK
+                wks = lineup_df[lineup_df['role'] == 'WK'].sort_values('credits', ascending=False)
+                keep_wk = wks.iloc[0]['player_name']
                 
-                # Check if this is the new format (with A,B,C,D,E,F header)
-                if 'Credits' in lineup_df.columns:
-                    if self.verbose:
-                        print("Detected new format CSV")
-                    # Rename columns to match our expected format
-                    lineup_df = lineup_df.rename(columns={
-                        'Credits': 'credits',
-                        'Player Type': 'role',
-                        'Player Name': 'player_name',
-                        'Team': 'team',
-                        'IsPlaying': 'is_playing',
-                        'lineupOrder': 'lineup_order'
-                    })
-                    
-                    # Filter only playing players
-                    lineup_df = lineup_df[lineup_df['is_playing'] == 'PLAYING']
-                    
-                    # Map roles to standard format
-                    role_mapping = {
-                        'BAT': 'BAT',
-                        'BOWL': 'BOWL',
-                        'ALL': 'AR',
-                        'WK': 'WK'
-                    }
-                    lineup_df['role'] = lineup_df['role'].map(role_mapping)
-                    
-                    # Convert lineup_order to numeric
-                    lineup_df['lineup_order'] = pd.to_numeric(lineup_df['lineup_order'], errors='coerce')
-                    
-                    # Convert credits to float
-                    lineup_df['credits'] = pd.to_numeric(lineup_df['credits'], errors='coerce')
-                    
-                    # Sort by lineup order
-                    if 'lineup_order' in lineup_df.columns:
-                        lineup_df = lineup_df.sort_values('lineup_order')
-                    
-                    # Ensure valid role distribution
-                    # Count WKs in lineup
-                    wk_count = sum(1 for r in lineup_df['role'] if r == 'WK')
-                    if wk_count > 1:
-                        if self.verbose:
-                            print(f"Found {wk_count} wicketkeepers in lineup, need to adjust")
-                        # Keep the highest lineup order WK and convert others to BAT
-                        wk_players = lineup_df[lineup_df['role'] == 'WK'].sort_values('lineup_order')
-                        # Keep first, convert rest
-                        for idx in wk_players.index[1:]:
-                            lineup_df.at[idx, 'role'] = 'BAT'
-                            if self.verbose:
-                                print(f"Converting {lineup_df.at[idx, 'player_name']} from WK to BAT")
-                    
-                    # Keep necessary columns including lineup_order for scoring
-                    lineup_df = lineup_df[['player_name', 'role', 'team', 'credits', 'lineup_order']]
-                    
-                else:
-                    # Handle the old format
-                    lineup_df = lineup_df.rename(columns={
-                        'Player Name': 'player_name',
-                        'Team': 'team',
-                        'Player Type': 'role',
-                        'Credits': 'credits',
-                        'IsPlaying': 'is_playing',
-                        'lineupOrder': 'lineup_order'
-                    })
-                    
-                    # Filter only playing players
-                    lineup_df = lineup_df[lineup_df['is_playing'] == True]
-                    
-                    # Convert credits to float
-                    lineup_df['credits'] = lineup_df['credits'].astype(float)
-                    
-                    # Map roles to standard format
-                    role_mapping = {
-                        'BAT': 'BAT',
-                        'BOWL': 'BOWL',
-                        'AR': 'AR',
-                        'WK': 'WK'
-                    }
-                    lineup_df['role'] = lineup_df['role'].map(role_mapping)
-                    
-                    # Sort by lineup order
-                    if 'lineup_order' in lineup_df.columns:
-                        lineup_df = lineup_df.sort_values('lineup_order')
-                    
-                    # Ensure valid role distribution
-                    # Count WKs in lineup
-                    wk_count = sum(1 for r in lineup_df['role'] if r == 'WK')
-                    if wk_count > 1:
-                        if self.verbose:
-                            print(f"Found {wk_count} wicketkeepers in lineup, need to adjust")
-                        # Keep the highest lineup order WK and convert others to BAT
-                        wk_players = lineup_df[lineup_df['role'] == 'WK'].sort_values('lineup_order')
-                        # Keep first, convert rest
-                        for idx in wk_players.index[1:]:
-                            lineup_df.at[idx, 'role'] = 'BAT'
-                            if self.verbose:
-                                print(f"Converting {lineup_df.at[idx, 'player_name']} from WK to BAT")
-                    
-                    # Keep necessary columns including lineup_order for scoring
-                    lineup_df = lineup_df[['player_name', 'role', 'team', 'credits', 'lineup_order']]
-                
-                if self.verbose:
-                    print(f"Successfully fetched lineup with {len(lineup_df)} players")
-                return lineup_df
-            else:
-                if self.verbose:
-                    print(f"Local file {local_file} not found")
-                return self._get_sample_data()
+                for _, wk in wks.iterrows():
+                    if wk['player_name'] != keep_wk:
+                        if verbose:
+                            print(f"Converting {wk['player_name']} from WK to BAT (credits: {wk['credits']}, lineup_order: {wk['lineup_order']})")
+                        lineup_df.loc[lineup_df['player_name'] == wk['player_name'], 'role'] = 'BAT'
+            
+            # Add role-specific features
+            lineup_df['is_batsman'] = (lineup_df['role'].isin(['BAT', 'WK'])).astype(int)
+            lineup_df['is_bowler'] = (lineup_df['role'] == 'BOWL').astype(int)
+            lineup_df['is_allrounder'] = (lineup_df['role'] == 'AR').astype(int)
+            lineup_df['is_wicketkeeper'] = (lineup_df['role'] == 'WK').astype(int)
+            
+            # Initialize form-related columns
+            form_columns = ['recent_runs', 'recent_wickets', 'strike_rate', 'economy_rate', 
+                          'boundary_rate', 'death_over_economy', 'batting_avg', 'bowling_avg']
+            for col in form_columns:
+                lineup_df[col] = 0.0
+            
+            if verbose:
+                print(f"Successfully fetched lineup with {len(lineup_df)} players")
+                print("\nRole distribution:")
+                print(lineup_df['role'].value_counts())
+                print("\nTeam distribution:")
+                print(lineup_df['team'].value_counts())
+            
+            self.lineup_data = lineup_df
+            return lineup_df
             
         except Exception as e:
-            if self.verbose:
+            if verbose:
                 print(f"Error fetching lineup: {str(e)}")
-                print("Using sample data instead")
-            return self._get_sample_data()
+                import traceback
+                traceback.print_exc()
+            return None
 
     def _match_players(self, lineup_df):
         """Match players from lineup with dataset records."""
@@ -195,348 +156,432 @@ class Dream11TeamSelector:
         
         return matched_df
 
-    def _deterministic_score(self, player_data: pd.DataFrame) -> pd.Series:
-        """Calculate deterministic performance scores based on player attributes."""
-        scores = []
-        
-        for _, player in player_data.iterrows():
-            # Base score from credits (assuming higher credit players are better)
-            base_score = 0.5  # Default value
-            if 'credits' in player and not pd.isna(player['credits']):
-                base_score = float(player['credits']) / 10.0
-            
-            # Role-specific adjustments
-            role = None
-            for role_field in ['role', 'Role', 'Player Type']:
-                if role_field in player and not pd.isna(player[role_field]):
-                    role = player[role_field]
-                    break
-                    
-            role_factor = 1.0
-            if role:
-                role_mapping = {
-                    'BAT': 'BAT',
-                    'BOWL': 'BOWL',
-                    'AR': 'AR',
-                    'ALL': 'AR',  # Map ALL to AR
-                    'WK': 'WK'
-                }
-                std_role = role_mapping.get(role, role)
-                role_factor = {
-                    'BAT': 1.0,
-                    'BOWL': 1.0,
-                    'AR': 1.1,  # All-rounders get a slight boost
-                    'WK': 0.95  # Wicketkeepers slightly lower
-                }.get(std_role, 1.0)
-            
-            # Team factor - could be based on team's performance
-            team_factor = 1.0
-            
-            # Lineup order adjustment
-            lineup_factor = 1.0
-            if 'lineup_order' in player and not pd.isna(player['lineup_order']):
-                try:
-                    lineup_order = float(player['lineup_order'])
-                    # Batsmen benefit from batting early
-                    if role in ['BAT', 'WK'] and isinstance(lineup_order, (int, float)):
-                        if lineup_order <= 3:
-                            lineup_factor = 1.1
-                        elif lineup_order <= 5:
-                            lineup_factor = 1.05
-                    
-                    # Bowlers less affected by lineup order
-                    if role in ['BOWL'] and isinstance(lineup_order, (int, float)):
-                        lineup_factor = 1.0
-                except (ValueError, TypeError):
-                    pass
-            
-            # Historical stats adjustment if available
-            stats_factor = 1.0
-            batting_avg = player.get('batting_avg', 0)
-            strike_rate = player.get('strike_rate', 0)
-            economy_rate = player.get('economy_rate', 0)
-            
-            if not pd.isna(batting_avg) and not pd.isna(strike_rate) and not pd.isna(economy_rate):
-                # Batters value strike rate and average
-                if role in ['BAT', 'WK']:
-                    if batting_avg > 30:
-                        stats_factor *= 1.1
-                    if strike_rate > 140:
-                        stats_factor *= 1.1
-                
-                # Bowlers value economy rate
-                if role in ['BOWL']:
-                    if economy_rate < 8:
-                        stats_factor *= 1.1
-            
-            # Calculate final score
-            final_score = base_score * role_factor * team_factor * lineup_factor * stats_factor
-            
-            # Add some randomness (optional)
-            random_factor = np.random.normal(1.0, 0.05)  # 5% variation
-            final_score *= random_factor
-            
-            # Ensure score is between 0 and 1
-            final_score = max(0, min(1, final_score))
-            
-            scores.append(final_score)
-        
-        return pd.Series(scores, index=player_data.index)
-
-    def _predict_performance(self, players: pd.DataFrame) -> pd.DataFrame:
-        """Predict performance scores using the trained model."""
+    def _predict_performance(self, players_df, verbose=False):
+        """
+        Predict performance scores using a simple credit and role-based approach.
+        """
         try:
-            # Try to load historical metrics
-            try:
-                historical_metrics = pd.read_csv('data/player_historical_metrics.csv')
-                if self.verbose:
-                    print(f"Loaded historical metrics for {len(historical_metrics)} players")
-            except Exception as e:
-                if self.verbose:
-                    print(f"Error loading historical metrics: {e}")
-                historical_metrics = pd.DataFrame(columns=['player_name', 'team'])
+            # Ensure required columns exist
+            required_columns = ['player_name', 'team', 'role', 'credits']
+            missing_columns = [col for col in required_columns if col not in players_df.columns]
+            if missing_columns:
+                if verbose:
+                    print(f"Missing required columns: {missing_columns}")
+                    print("Available columns:", players_df.columns.tolist())
+                raise ValueError(f"Missing required columns: {missing_columns}")
             
-            # Create a copy of the players dataframe to avoid modifying the original
-            players_with_predictions = players.copy()
+            # Create a copy of the players dataframe
+            players_with_predictions = players_df.copy()
             
-            # Try to merge with historical metrics if available
-            if not historical_metrics.empty:
-                if self.verbose:
-                    print("Merging with historical metrics")
-                merged_data = pd.merge(
-                    players,
-                    historical_metrics,
-                    on=['player_name', 'team'],
-                    how='left'
-                )
-                
-                # Fill missing values with zeros
-                for col in historical_metrics.columns:
-                    if col not in ['player_name', 'team', 'role', 'credits']:
-                        if col in merged_data.columns:
-                            merged_data[col] = merged_data[col].fillna(0)
-                            
-                players_with_predictions = merged_data
+            # Initialize prediction columns
+            players_with_predictions['predicted_score'] = 0.0
+            players_with_predictions['is_captain'] = False
+            players_with_predictions['is_vice_captain'] = False
             
-            # Generate performance scores using the loaded model or deterministic method
-            if self.verbose:
-                print("Generating performance scores with prediction model")
+            # Calculate base score from credits (assuming higher credit players are better)
+            players_with_predictions['predicted_score'] = players_with_predictions['credits'] * 1.2
             
-            try:
-                # Try using the model
-                predictions = self.performance_predictor.predict_performance(players_with_predictions)
-                players_with_predictions['predicted_score'] = predictions * 10  # Scale to 0-10 range
-                if self.verbose:
-                    print("Successfully generated model-based predictions")
-            except Exception as e:
-                if self.verbose:
-                    print(f"Error using trained model: {str(e)}")
-                    # Fallback: Calculate performance scores using deterministic method
-                    print("Falling back to deterministic scoring method")
-                deterministic_scores = self._deterministic_score(players_with_predictions)
-                players_with_predictions['predicted_score'] = deterministic_scores * 10  # Scale to 0-10 range
-                if self.verbose:
-                    print("Generated deterministic performance scores")
-            
-            if self.verbose:
-                print(f"Generated performance scores for {len(players_with_predictions)} players")
-            
-            # Select and return only necessary columns
-            result_columns = ['player_name', 'role', 'team', 'credits', 'predicted_score']
-            if 'lineup_order' in players_with_predictions.columns:
-                result_columns.append('lineup_order')
-                
-            return players_with_predictions[result_columns]
-            
-        except Exception as e:
-            if self.verbose:
-                print(f"Error predicting performance: {str(e)}")
-            # Return original data with random scores as fallback
-            players_copy = players.copy()
-            players_copy['predicted_score'] = np.random.uniform(5, 10, len(players))
-            return players_copy
-
-    def select_dream11_team(self, players_with_predictions):
-        """Select the best Dream11 team based on predicted scores and constraints."""
-        try:
-            if 'predicted_score' not in players_with_predictions.columns:
-                if self.verbose:
-                    print("Missing predicted scores. Cannot select team.")
-                return None
-
-            # Sort players by predicted score in descending order
-            sorted_players = players_with_predictions.sort_values('predicted_score', ascending=False)
-
-            # Print available players for debugging
-            if self.verbose:
-                print("\nAvailable players for selection:")
-                for idx, player in sorted_players.iterrows():
-                    print(f"{player['player_name']} ({player['role']}, {player['team']}, {player['credits']}, score: {player['predicted_score']:.2f})")
-
-            # Initialize selected team
-            selected_team = []
-            total_credits = 0
-            role_count = {'WK': 0, 'BAT': 0, 'AR': 0, 'BOWL': 0}
-            team_count = {}
-
-            # Role constraints - made more flexible
-            role_limits = {
-                'WK': (1, 4),  # 1-4 wicket-keepers (more flexible)
-                'BAT': (3, 6),  # 3-6 batsmen
-                'AR': (1, 4),  # 1-4 all-rounders
-                'BOWL': (1, 6)  # 1-6 bowlers (more flexible)
+            # Add role-based bonus
+            role_bonus = {
+                'WK': 1.1,  # Wicketkeepers get a slight bonus
+                'BAT': 1.0,
+                'BOWL': 1.1,  # Bowlers get a slight bonus
+                'AR': 1.2   # All-rounders get a bigger bonus
             }
             
-            # Credit limit
-            credit_limit = 100  # Corrected from 110 to 100 as per requirement
-
-            # First pass: select players by role to ensure minimum requirements
-            for role, (min_count, _) in role_limits.items():
-                role_players = sorted_players[sorted_players['role'] == role].sort_values('predicted_score', ascending=False)
-                
-                if self.verbose:
-                    print(f"\nSelecting players for role {role} (need {min_count}):")
-                for _, player in role_players.iterrows():
-                    if role_count[role] >= min_count:
-                        break  # We have enough players for this role
-                        
-                    # Check if adding this player would violate any constraints
-                    if (total_credits + player['credits'] <= credit_limit and  # Credit limit
-                        team_count.get(player['team'], 0) < 7):      # Team limit
-                        
-                        # Add player to team
-                        selected_team.append(player)
-                        total_credits += player['credits']
-                        role_count[role] += 1
-                        team_count[player['team']] = team_count.get(player['team'], 0) + 1
-                        if self.verbose:
-                            print(f"  Selected {player['player_name']} ({player['role']})")
-                    else:
-                        if self.verbose:
-                            print(f"  Skipping {player['player_name']} due to constraints")
-
-            # Check if we have the minimum required players for each role
-            valid_minimums = all(role_count[role] >= min_count for role, (min_count, _) in role_limits.items())
-            if not valid_minimums:
-                if self.verbose:
-                    print("\nCould not meet minimum role requirements:")
-                    for role, (min_count, _) in role_limits.items():
-                        print(f"  {role}: {role_count[role]}/{min_count} required")
-                return None
-
-            # Second pass: fill remaining slots with best players
-            if self.verbose:
-                print("\nFilling remaining slots:")
-            remaining_players = sorted_players.copy()
-            # Remove already selected players
-            for player in selected_team:
-                remaining_players = remaining_players[remaining_players['player_name'] != player['player_name']]
-                
-            for _, player in remaining_players.iterrows():
-                if len(selected_team) >= 11:
-                    break  # We have enough players
-                    
-                # Check if adding this player would violate any constraints
-                if (total_credits + player['credits'] <= credit_limit and                  # Credit limit
-                    role_count[player['role']] < role_limits[player['role']][1] and  # Role upper limit
-                    team_count.get(player['team'], 0) < 7):                       # Team limit
-                    
-                    # Add player to team
-                    selected_team.append(player)
-                    total_credits += player['credits']
-                    role_count[player['role']] += 1
-                    team_count[player['team']] = team_count.get(player['team'], 0) + 1
-                    if self.verbose:
-                        print(f"  Selected {player['player_name']} ({player['role']})")
-                else:
-                    if self.verbose:
-                        print(f"  Skipping {player['player_name']} due to constraints")
-
-            # Convert selected team to DataFrame
-            if len(selected_team) == 11:
-                selected_df = pd.DataFrame(selected_team)
-                if self.verbose:
-                    print(f"\nSuccessfully selected team with {len(selected_df)} players")
-                    print(f"Total credits: {total_credits:.2f}")
-                    print(f"Role distribution: {role_count}")
-                    print(f"Team distribution: {team_count}")
-                return selected_df
-            else:
-                if self.verbose:
-                    print(f"\nCould only select {len(selected_team)} players, needed 11")
-                    print(f"Current role distribution: {role_count}")
-                    print(f"Current team distribution: {team_count}")
-                    print(f"Current credits: {total_credits:.2f}")
-                    
-                    # Try relaxing some constraints
-                    print("\nRelaxing constraints to select remaining players...")
-                # Sort remaining players by predicted score
-                remaining_players = sorted_players.copy()
-                for player in selected_team:
-                    remaining_players = remaining_players[remaining_players['player_name'] != player['player_name']]
-                
-                # Try to add more players, relaxing role limits
-                remaining_count = 11 - len(selected_team)
-                for _, player in remaining_players.iterrows():
-                    if len(selected_team) >= 11:
-                        break
-                    
-                    # Only check team and credit constraints
-                    if (total_credits + player['credits'] <= credit_limit and 
-                        team_count.get(player['team'], 0) < 7):
-                        
-                        selected_team.append(player)
-                        total_credits += player['credits']
-                        role_count[player['role']] += 1
-                        team_count[player['team']] = team_count.get(player['team'], 0) + 1
-                        if self.verbose:
-                            print(f"  Selected {player['player_name']} ({player['role']}) with relaxed constraints")
-                
-                if len(selected_team) == 11:
-                    selected_df = pd.DataFrame(selected_team)
-                    if self.verbose:
-                        print(f"\nSuccessfully selected team with {len(selected_df)} players using relaxed constraints")
-                        print(f"Total credits: {total_credits:.2f}")
-                        print(f"Role distribution: {role_count}")
-                        print(f"Team distribution: {team_count}")
-                    return selected_df
-                else:
-                    if self.verbose:
-                        print(f"\nStill could only select {len(selected_team)} players, needed 11")
-                    # Last resort: just pick top players regardless of constraints except credit limit
-                    if len(selected_team) >= 7:  # If we have at least 7 players, complete the team
-                        remaining_players = remaining_players.sort_values('predicted_score', ascending=False)
-                        remaining_count = 11 - len(selected_team)
-                        
-                        for _, player in remaining_players.iterrows():
-                            if len(selected_team) >= 11:
-                                break
-                                
-                            if total_credits + player['credits'] <= credit_limit:
-                                selected_team.append(player)
-                                total_credits += player['credits']
-                                role_count[player['role']] += 1
-                                team_count[player['team']] = team_count.get(player['team'], 0) + 1
-                                if self.verbose:
-                                    print(f"  Selected {player['player_name']} ({player['role']}) as last resort")
-                        
-                        selected_df = pd.DataFrame(selected_team)
-                        if self.verbose:
-                            print(f"\nFinally selected team with {len(selected_df)} players using last resort")
-                            print(f"Total credits: {total_credits:.2f}")
-                            print(f"Role distribution: {role_count}")
-                            print(f"Team distribution: {team_count}")
-                        return selected_df
-                    
-                    return None
-
+            for role, bonus in role_bonus.items():
+                mask = players_with_predictions['role'] == role
+                players_with_predictions.loc[mask, 'predicted_score'] *= bonus
+            
+            # Add random variation to break ties (small random number between 0.95 and 1.05)
+            np.random.seed(42)  # For reproducibility
+            random_factors = np.random.uniform(0.95, 1.05, len(players_with_predictions))
+            players_with_predictions['predicted_score'] *= random_factors
+            
+            if verbose:
+                print("\nGenerated predictions for all players")
+                print("\nTop 5 players by predicted score:")
+                top_5 = players_with_predictions.nlargest(5, 'predicted_score')
+                print(top_5[['player_name', 'team', 'role', 'credits', 'predicted_score']])
+            
+            return players_with_predictions
+            
         except Exception as e:
-            if self.verbose:
+            if verbose:
+                print(f"Error predicting performance: {str(e)}")
+                import traceback
+                traceback.print_exc()
+            return None
+
+    def select_dream11_team(self) -> pd.DataFrame:
+        """
+        Select the best Dream11 team based on player performance predictions and constraints.
+        """
+        try:
+            print("========== DREAM11 TEAM SELECTION PIPELINE ==========")
+            
+            # Fetch lineup data
+            lineup_df = self.fetch_lineup(verbose=True)
+            if lineup_df is None or len(lineup_df) == 0:
+                print("ERROR: Failed to fetch lineup data. Aborting pipeline.")
+                return None
+            
+            # Predict player performance
+            players_with_predictions = self._predict_performance(lineup_df, verbose=True)
+            if players_with_predictions is None or len(players_with_predictions) == 0:
+                print("ERROR: Failed to predict player performance. Aborting pipeline.")
+                return None
+            
+            # Define role limits for team selection
+            role_limits = {
+                'WK': {'min': 1, 'max': 1},
+                'BAT': {'min': 3, 'max': 5},
+                'AR': {'min': 1, 'max': 4},
+                'BOWL': {'min': 3, 'max': 5}
+            }
+            
+            # Select team using strategy
+            selected_team = self._select_team_with_strategy(
+                players_with_predictions,
+                role_limits=role_limits,
+                max_players_per_team=7,
+                total_credits=100,
+                verbose=True
+            )
+            
+            if selected_team is None or len(selected_team) == 0:
+                print("ERROR: Failed to select team. Aborting pipeline.")
+                return None
+            
+            # Generate output
+            output_success = self.generate_output(selected_team)
+            if not output_success:
+                print("ERROR: Failed to generate output. Pipeline completed with errors.")
+            else:
+                print("SUCCESS: Dream11 team selection completed successfully.")
+            
+            return selected_team
+            
+        except Exception as e:
+            print(f"ERROR: An unexpected error occurred: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            return None
+    
+    def _select_team_with_strategy(self, players_df, role_limits, max_players_per_team=7, total_credits=100, verbose=False):
+        """
+        Select team using a balanced strategy considering form, credits, and role distribution.
+        """
+        try:
+            # Sort players by predicted score (descending)
+            sorted_players = players_df.sort_values('predicted_score', ascending=False)
+            
+            # Initialize selected team
+            selected_team = pd.DataFrame(columns=sorted_players.columns)
+            total_credits_used = 0
+            team_counts = {}
+            role_counts = {'WK': 0, 'BAT': 0, 'AR': 0, 'BOWL': 0}
+            selected_players = set()  # Keep track of selected players
+            
+            if verbose:
+                print("\nSelecting team with strategy...")
+                print(f"Available players: {len(sorted_players)}")
+            
+            # First, select one wicketkeeper
+            wks = sorted_players[sorted_players['role'] == 'WK']
+            if len(wks) == 0:
+                if verbose:
+                    print("ERROR: No wicketkeepers available")
+                return None
+            
+            best_wk = wks.iloc[0]
+            selected_team = pd.concat([selected_team, pd.DataFrame([best_wk])], ignore_index=True)
+            total_credits_used += best_wk['credits']
+            team_counts[best_wk['team']] = 1
+            role_counts['WK'] = 1
+            selected_players.add(best_wk['player_name'])
+            
+            if verbose:
+                print(f"\nSelected WK: {best_wk['player_name']} (Credits: {best_wk['credits']}, Score: {best_wk['predicted_score']:.2f})")
+            
+            # Then select remaining players by role
+            remaining_roles = ['BAT', 'AR', 'BOWL']
+            for role in remaining_roles:
+                role_players = sorted_players[
+                    (sorted_players['role'] == role) & 
+                    (~sorted_players['player_name'].isin(selected_players))
+                ]
+                
+                min_required = role_limits[role]['min']
+                max_allowed = role_limits[role]['max']
+                
+                # Select players for this role
+                for _ in range(min_required):
+                    for _, player in role_players.iterrows():
+                        # Skip if player already selected
+                        if player['player_name'] in selected_players:
+                            continue
+                            
+                        # Check if adding this player would violate any constraints
+                        if (total_credits_used + player['credits'] <= total_credits and
+                            team_counts.get(player['team'], 0) < max_players_per_team):
+                            
+                            selected_team = pd.concat([selected_team, pd.DataFrame([player])], ignore_index=True)
+                            total_credits_used += player['credits']
+                            team_counts[player['team']] = team_counts.get(player['team'], 0) + 1
+                            role_counts[role] += 1
+                            selected_players.add(player['player_name'])
+                            
+                            if verbose:
+                                print(f"Selected {role}: {player['player_name']} (Credits: {player['credits']}, Score: {player['predicted_score']:.2f})")
+                            break
+            
+            # Fill remaining slots optimally
+            while len(selected_team) < 11 and total_credits_used < total_credits:
+                best_remaining = None
+                best_score = 0
+                
+                for _, player in sorted_players.iterrows():
+                    # Skip if player already selected
+                    if player['player_name'] in selected_players:
+                        continue
+                        
+                    # Check all constraints
+                    if (total_credits_used + player['credits'] <= total_credits and
+                        team_counts.get(player['team'], 0) < max_players_per_team and
+                        role_counts[player['role']] < role_limits[player['role']]['max']):
+                        
+                        if player['predicted_score'] > best_score:
+                            best_remaining = player
+                            best_score = player['predicted_score']
+                
+                if best_remaining is None:
+                    break
+                    
+                selected_team = pd.concat([selected_team, pd.DataFrame([best_remaining])], ignore_index=True)
+                total_credits_used += best_remaining['credits']
+                team_counts[best_remaining['team']] = team_counts.get(best_remaining['team'], 0) + 1
+                role_counts[best_remaining['role']] += 1
+                selected_players.add(best_remaining['player_name'])
+                
+                if verbose:
+                    print(f"Selected {best_remaining['role']}: {best_remaining['player_name']} (Credits: {best_remaining['credits']}, Score: {best_remaining['predicted_score']:.2f})")
+            
+            if len(selected_team) < 11:
+                if verbose:
+                    print("ERROR: Could not select 11 players with given constraints")
+                return None
+            
+            # Select captain and vice captain
+            selected_team = selected_team.sort_values('predicted_score', ascending=False)
+            selected_team.loc[selected_team.index[0], 'is_captain'] = True
+            selected_team.loc[selected_team.index[1], 'is_vice_captain'] = True
+            
+            # Select substitute players
+            substitute_team = self._select_substitute_players(
+                sorted_players, 
+                selected_players, 
+                team_counts, 
+                role_counts,
+                total_credits_used,
+                max_players_per_team,
+                verbose
+            )
+            
+            if verbose:
+                print("\nFinal team selection:")
+                print(f"Total credits used: {total_credits_used}")
+                print("\nRole distribution:")
+                for role, count in role_counts.items():
+                    print(f"{role}: {count}")
+                print("\nTeam distribution:")
+                for team, count in team_counts.items():
+                    print(f"{team}: {count}")
+                print(f"\nCaptain: {selected_team.iloc[0]['player_name']} ({selected_team.iloc[0]['role']})")
+                print(f"Vice Captain: {selected_team.iloc[1]['player_name']} ({selected_team.iloc[1]['role']})")
+                
+                if substitute_team is not None and len(substitute_team) > 0:
+                    print("\nSubstitute Players:")
+                    for _, sub in substitute_team.iterrows():
+                        print(f"{sub['role']}: {sub['player_name']} (Credits: {sub['credits']}, Score: {sub['predicted_score']:.2f})")
+            
+            # Add substitute players to the selected team with a flag
+            if substitute_team is not None and len(substitute_team) > 0:
+                substitute_team['is_substitute'] = True
+                selected_team['is_substitute'] = False
+                selected_team = pd.concat([selected_team, substitute_team], ignore_index=True)
+            
+            return selected_team
+            
+        except Exception as e:
+            if verbose:
                 print(f"Error selecting team: {str(e)}")
                 import traceback
                 traceback.print_exc()
             return None
-    
+
+    def _select_substitute_players(self, sorted_players, selected_players, team_counts, role_counts, 
+                                  total_credits_used, max_players_per_team, verbose=False):
+        """
+        Select substitute players for the Dream11 team.
+        
+        Substitute selection criteria:
+        1. Players not in the main team
+        2. Maintain role balance (2 AR, 1 BAT, 1 BOWL)
+        3. Maintain team balance (but can be relaxed for last slot)
+        4. Select players with high predicted scores
+        5. No credit limit for substitutes
+        """
+        try:
+            # Initialize substitute team
+            substitute_team = pd.DataFrame(columns=sorted_players.columns)
+            
+            # Define required role distribution for substitutes (2 AR, 1 BAT, 1 BOWL)
+            required_sub_roles = {'AR': 2, 'BAT': 1, 'BOWL': 1}
+            
+            # First, try to select a bowler since that's the most critical missing piece
+            bowlers = sorted_players[
+                (sorted_players['role'] == 'BOWL') & 
+                (~sorted_players['player_name'].isin(selected_players))
+            ]
+            
+            if len(bowlers) > 0:
+                best_bowler = None
+                best_score = 0
+                
+                for _, bowler in bowlers.iterrows():
+                    # Check if adding this player would violate team constraints
+                    if team_counts.get(bowler['team'], 0) < max_players_per_team:
+                        if bowler['predicted_score'] > best_score:
+                            best_bowler = bowler
+                            best_score = bowler['predicted_score']
+                
+                if best_bowler is not None:
+                    substitute_team = pd.concat([substitute_team, pd.DataFrame([best_bowler])], ignore_index=True)
+                    selected_players.add(best_bowler['player_name'])
+                    team_counts[best_bowler['team']] = team_counts.get(best_bowler['team'], 0) + 1
+                    
+                    if verbose:
+                        print(f"Selected substitute BOWL: {best_bowler['player_name']} (Credits: {best_bowler['credits']}, Score: {best_bowler['predicted_score']:.2f})")
+            
+            # Then select remaining substitutes by role
+            for role, count in required_sub_roles.items():
+                if role == 'BOWL':  # Skip BOWL as we've already handled it
+                    continue
+                    
+                # Find available players of this role
+                role_players = sorted_players[
+                    (sorted_players['role'] == role) & 
+                    (~sorted_players['player_name'].isin(selected_players))
+                ]
+                
+                if len(role_players) == 0:
+                    if verbose:
+                        print(f"WARNING: No {role} players available for substitutes")
+                    continue
+                
+                # Select the required number of players for this role
+                for _ in range(count):
+                    best_player = None
+                    best_score = 0
+                    
+                    for _, player in role_players.iterrows():
+                        # Skip if player already selected
+                        if player['player_name'] in selected_players:
+                            continue
+                            
+                        # Check if adding this player would violate team constraints
+                        # For BAT role, we'll relax the team constraints
+                        if role == 'BAT' or team_counts.get(player['team'], 0) < max_players_per_team:
+                            if player['predicted_score'] > best_score:
+                                best_player = player
+                                best_score = player['predicted_score']
+                    
+                    if best_player is not None:
+                        substitute_team = pd.concat([substitute_team, pd.DataFrame([best_player])], ignore_index=True)
+                        selected_players.add(best_player['player_name'])
+                        team_counts[best_player['team']] = team_counts.get(best_player['team'], 0) + 1
+                        
+                        if verbose:
+                            print(f"Selected substitute {role}: {best_player['player_name']} (Credits: {best_player['credits']}, Score: {best_player['predicted_score']:.2f})")
+                    else:
+                        if verbose:
+                            print(f"WARNING: Could not find {role} player for substitutes")
+            
+            # If we still don't have 4 substitutes, try to find any available players
+            if len(substitute_team) < 4:
+                if verbose:
+                    print(f"WARNING: Only found {len(substitute_team)} substitutes, need 4")
+                
+                # Try to fill remaining slots with any available players
+                remaining_slots = 4 - len(substitute_team)
+                for _ in range(remaining_slots):
+                    best_remaining = None
+                    best_score = 0
+                    
+                    for _, player in sorted_players.iterrows():
+                        # Skip if player already selected
+                        if player['player_name'] in selected_players:
+                            continue
+                            
+                        # For remaining slots, we don't check team constraints
+                        if player['predicted_score'] > best_score:
+                            best_remaining = player
+                            best_score = player['predicted_score']
+                    
+                    if best_remaining is None:
+                        break
+                        
+                    substitute_team = pd.concat([substitute_team, pd.DataFrame([best_remaining])], ignore_index=True)
+                    selected_players.add(best_remaining['player_name'])
+                    team_counts[best_remaining['team']] = team_counts.get(best_remaining['team'], 0) + 1
+                    
+                    if verbose:
+                        print(f"Selected additional substitute {best_remaining['role']}: {best_remaining['player_name']} (Credits: {best_remaining['credits']}, Score: {best_remaining['predicted_score']:.2f})")
+            
+            # If we still don't have 4 substitutes, log a warning
+            if len(substitute_team) < 4:
+                if verbose:
+                    print(f"WARNING: Still only found {len(substitute_team)} substitutes after trying to fill slots")
+            
+            return substitute_team
+            
+        except Exception as e:
+            if verbose:
+                print(f"Error selecting substitute players: {str(e)}")
+                import traceback
+                traceback.print_exc()
+            return None
+
+    def _calculate_form_score(self, player):
+        """Calculate form score based on recent performance."""
+        form_score = 0.0
+        
+        # Batting form
+        if player['role'] in ['BAT', 'WK', 'AR']:
+            if player.get('recent_runs', 0) > 30:  # Good batting form
+                form_score += 0.2
+            if player.get('strike_rate', 0) > 150:  # Aggressive batting
+                form_score += 0.1
+            if player.get('boundary_rate', 0) > 0.2:  # Good boundary hitting
+                form_score += 0.1
+        
+        # Bowling form
+        if player['role'] in ['BOWL', 'AR']:
+            if player.get('recent_wickets', 0) > 2:  # Good bowling form
+                form_score += 0.2
+            if player.get('economy_rate', 0) < 8:  # Economical bowling
+                form_score += 0.1
+            if player.get('death_over_economy', 0) < 9:  # Good death overs
+                form_score += 0.1
+        
+        # All-rounder form
+        if player['role'] == 'AR':
+            if player.get('recent_runs', 0) > 20 and player.get('recent_wickets', 0) > 1:
+                form_score += 0.2  # Bonus for all-round performance
+        
+        return min(form_score, 0.5)  # Cap form boost at 50%
+
     def generate_output(self, selected_team):
         """Generate formatted output for the selected Dream11 team."""
         if selected_team is None or selected_team.empty:
@@ -546,39 +591,43 @@ class Dream11TeamSelector:
         # Create DataFrame for output
         output_df = selected_team.copy()
         
-        # Calculate total credits
-        total_credits = output_df['credits'].sum()
+        # Separate main team and substitutes
+        main_team = output_df[~output_df['is_substitute']]
+        substitutes = output_df[output_df['is_substitute']]
         
-        # Calculate total predicted score
-        total_predicted_score = output_df['predicted_score'].sum()
+        # Calculate total credits for main team only
+        total_credits = main_team['credits'].sum()
         
-        # If Captain and Vice Captain columns don't exist, add them based on predicted scores
-        if 'Captain' not in output_df.columns or 'Vice Captain' not in output_df.columns:
-            output_df = output_df.sort_values('predicted_score', ascending=False)
-            output_df['Captain'] = False
-            output_df['Vice Captain'] = False
-            
-            if len(output_df) > 0:
-                output_df.iloc[0, output_df.columns.get_loc('Captain')] = True
-            if len(output_df) > 1:
-                output_df.iloc[1, output_df.columns.get_loc('Vice Captain')] = True
+        # Calculate total predicted score for main team only
+        total_predicted_score = main_team['predicted_score'].sum()
         
         # Get captain and vice-captain names
-        captain_name = output_df[output_df['Captain']]['player_name'].iloc[0] if not output_df[output_df['Captain']].empty else None
-        vice_captain_name = output_df[output_df['Vice Captain']]['player_name'].iloc[0] if not output_df[output_df['Vice Captain']].empty else None
+        captain_name = main_team[main_team['is_captain']]['player_name'].iloc[0] if not main_team[main_team['is_captain']].empty else None
+        vice_captain_name = main_team[main_team['is_vice_captain']]['player_name'].iloc[0] if not main_team[main_team['is_vice_captain']].empty else None
         
         # Create summary
         team_summary = {
             'total_credits': float(total_credits),
             'total_predicted_score': float(total_predicted_score),
-            'role_distribution': output_df['role'].value_counts().to_dict(),
-            'team_distribution': output_df['team'].value_counts().to_dict(),
+            'role_distribution': main_team['role'].value_counts().to_dict(),
+            'team_distribution': main_team['team'].value_counts().to_dict(),
             'captain': captain_name,
             'vice_captain': vice_captain_name,
             'timestamp': datetime.now().strftime('%Y%m%d_%H%M%S')
         }
         
-        return {'summary': team_summary, 'team': output_df}
+        # Add substitute information if available
+        if not substitutes.empty:
+            team_summary['substitutes'] = {
+                'count': len(substitutes),
+                'role_distribution': substitutes['role'].value_counts().to_dict(),
+                'team_distribution': substitutes['team'].value_counts().to_dict(),
+                'total_credits': float(substitutes['credits'].sum()),
+                'total_predicted_score': float(substitutes['predicted_score'].sum()),
+                'players': substitutes.to_dict(orient='records')
+            }
+        
+        return {'summary': team_summary, 'team': main_team}
     
     def save_output(self, team_output):
         """Save the selected team to JSON and CSV files."""
@@ -617,6 +666,13 @@ class Dream11TeamSelector:
             print(f"  Team Distribution: {team_output['summary']['team_distribution']}")
             print(f"  Captain: {team_output['summary']['captain']}")
             print(f"  Vice Captain: {team_output['summary']['vice_captain']}")
+            
+            # Display substitute information if available
+            if 'substitutes' in team_output['summary']:
+                print(f"  Substitutes: {team_output['summary']['substitutes']['count']}")
+                print(f"  Substitute Role Distribution: {team_output['summary']['substitutes']['role_distribution']}")
+                print(f"  Substitute Team Distribution: {team_output['summary']['substitutes']['team_distribution']}")
+            
             if 'model_accuracy' in team_output['summary']:
                 print(f"  Model Accuracy: {team_output['summary']['model_accuracy']:.2f}%")
     
@@ -627,7 +683,7 @@ class Dream11TeamSelector:
         
         try:
             # Step 1: Get player lineup
-            lineup_df = self._fetch_lineup_from_sheets()
+            lineup_df = self.fetch_lineup()
             
             if lineup_df is None or lineup_df.empty:
                 if self.verbose:
@@ -651,32 +707,17 @@ class Dream11TeamSelector:
                 return
             
             # Step 4: Select the best Dream11 team
-            selected_team = self.select_dream11_team(players_with_predictions)
+            selected_team = self.select_dream11_team()
             
             if selected_team is None:
                 if self.verbose:
                     print("ERROR: Failed to select Dream11 team. Aborting pipeline.")
                 return
             
-            # Step 5: Assign captain and vice-captain before evaluation
-            selected_team = selected_team.sort_values('predicted_score', ascending=False)
-            selected_team['Captain'] = False
-            selected_team['Vice Captain'] = False
-            
-            if len(selected_team) > 0:
-                selected_team.iloc[0, selected_team.columns.get_loc('Captain')] = True
-            if len(selected_team) > 1:
-                selected_team.iloc[1, selected_team.columns.get_loc('Vice Captain')] = True
-            
-            # Step 6: Evaluate the team selection quality and accuracy
-            model_accuracy = self.evaluate_team_selection(selected_team)
-            
-            # Step 7: Generate and save output
+            # Step 5: Generate and save output
             team_output = self.generate_output(selected_team)
             
             if team_output:
-                # Add model accuracy to the output
-                team_output['summary']['model_accuracy'] = model_accuracy
                 self.save_output(team_output)
                 
                 # Print only the team info in JSON format
@@ -687,7 +728,6 @@ class Dream11TeamSelector:
                     'team_distribution': team_output['summary']['team_distribution'],
                     'captain': team_output['summary']['captain'],
                     'vice_captain': team_output['summary']['vice_captain'],
-                    'model_accuracy': model_accuracy,
                     'players': players_list
                 }
                 print(json.dumps(team_summary, indent=2))
@@ -738,13 +778,68 @@ class Dream11TeamSelector:
         captain_score = selected_team[selected_team['Captain']]['predicted_score'].iloc[0] / 10.0
         vice_captain_score = selected_team[selected_team['Vice Captain']]['predicted_score'].iloc[0] / 10.0
         
+        # 6. Form-based evaluation (if form data is available)
+        form_score = 0.5  # Default middle score
+        if 'form_score' in selected_team.columns:
+            avg_form_score = selected_team['form_score'].mean()
+            form_score = min(1.0, avg_form_score * 2)  # Normalize to [0,1]
+        
+        # 7. Versatility score (players who can perform multiple roles)
+        versatility_score = 0.5  # Default middle score
+        if 'versatility_score' in selected_team.columns:
+            avg_versatility = selected_team['versatility_score'].mean()
+            versatility_score = min(1.0, avg_versatility)
+        
+        # 8. Team composition score (how well the team complements each other)
+        composition_score = 0.5  # Default middle score
+        
+        # Check for good mix of players
+        has_aggressive_batsman = False
+        has_anchoring_batsman = False
+        has_power_hitter = False
+        has_spinner = False
+        has_pacer = False
+        
+        for _, player in selected_team.iterrows():
+            # Check for aggressive batsman (high strike rate)
+            if player['role'] in ['BAT', 'WK'] and player.get('strike_rate', 0) > 150:
+                has_aggressive_batsman = True
+            
+            # Check for anchoring batsman (good average)
+            if player['role'] in ['BAT', 'WK'] and player.get('batting_avg', 0) > 30:
+                has_anchoring_batsman = True
+            
+            # Check for power hitter (high boundary rate)
+            if player['role'] in ['BAT', 'WK', 'AR'] and player.get('boundary_rate', 0) > 20:
+                has_power_hitter = True
+            
+            # Check for spinner (good economy rate)
+            if player['role'] in ['BOWL', 'AR'] and player.get('economy_rate', 0) < 8:
+                has_spinner = True
+            
+            # Check for pacer (good bowling strike rate)
+            if player['role'] in ['BOWL', 'AR'] and player.get('bowling_sr', 0) < 20:
+                has_pacer = True
+        
+        # Calculate composition score based on player mix
+        composition_score = (
+            (1 if has_aggressive_batsman else 0) * 0.2 +
+            (1 if has_anchoring_batsman else 0) * 0.2 +
+            (1 if has_power_hitter else 0) * 0.2 +
+            (1 if has_spinner else 0) * 0.2 +
+            (1 if has_pacer else 0) * 0.2
+        )
+        
         # Calculate weighted overall score
         weights = {
-            'credit_utilization': 0.15,
-            'star_player': 0.25,
-            'role_balance': 0.2,
-            'team_balance': 0.15,
-            'captain_selection': 0.25
+            'credit_utilization': 0.10,
+            'star_player': 0.15,
+            'role_balance': 0.15,
+            'team_balance': 0.10,
+            'captain_selection': 0.15,
+            'form': 0.10,
+            'versatility': 0.10,
+            'composition': 0.15
         }
         
         overall_score = (
@@ -752,7 +847,10 @@ class Dream11TeamSelector:
             weights['star_player'] * star_player_score +
             weights['role_balance'] * role_balance_score +
             weights['team_balance'] * team_balance_score +
-            weights['captain_selection'] * (captain_score * 0.6 + vice_captain_score * 0.4)
+            weights['captain_selection'] * (captain_score * 0.6 + vice_captain_score * 0.4) +
+            weights['form'] * form_score +
+            weights['versatility'] * versatility_score +
+            weights['composition'] * composition_score
         )
         
         # Convert to percentage (0-100)
@@ -765,14 +863,61 @@ class Dream11TeamSelector:
             print(f"Role Balance Score: {role_balance_score:.2f} (diff from ideal: {role_diff})")
             print(f"Team Balance Score: {team_balance_score:.2f} (max from one team: {max_from_one_team})")
             print(f"Captain Selection Score: {captain_score:.2f}, Vice Captain: {vice_captain_score:.2f}")
+            print(f"Form Score: {form_score:.2f}")
+            print(f"Versatility Score: {versatility_score:.2f}")
+            print(f"Team Composition Score: {composition_score:.2f}")
             print(f"\nOVERALL MODEL ACCURACY: {accuracy_percentage:.2f}%")
             print("====================================")
+            
+            # Provide recommendations for improvement
+            print("\nRECOMMENDATIONS FOR IMPROVEMENT:")
+            if credit_utilization_score < 0.7:
+                print(f"- Consider using more credits (currently using {total_credits:.1f}/100)")
+            
+            if role_balance_score < 0.7:
+                print("- Adjust role distribution to be closer to ideal (1 WK, 3 BAT, 3 AR, 4 BOWL)")
+                for role, count in role_counts.items():
+                    ideal = ideal_role_counts.get(role, 0)
+                    if count < ideal:
+                        print(f"  - Need {ideal - count} more {role} player(s)")
+                    elif count > ideal:
+                        print(f"  - Have {count - ideal} too many {role} player(s)")
+            
+            if team_balance_score < 0.7:
+                print(f"- Team distribution is too skewed (max {max_from_one_team} from one team)")
+                for team, count in team_counts.items():
+                    if count > 6:
+                        print(f"  - Consider replacing {count - 6} player(s) from {team}")
+            
+            if form_score < 0.7:
+                print("- Consider selecting more players in good form")
+            
+            if versatility_score < 0.7:
+                print("- Consider selecting more versatile players who can perform multiple roles")
+            
+            if composition_score < 0.7:
+                print("- Team composition could be improved:")
+                if not has_aggressive_batsman:
+                    print("  - Add an aggressive batsman (high strike rate)")
+                if not has_anchoring_batsman:
+                    print("  - Add an anchoring batsman (good average)")
+                if not has_power_hitter:
+                    print("  - Add a power hitter (high boundary rate)")
+                if not has_spinner:
+                    print("  - Add a spinner (good economy rate)")
+                if not has_pacer:
+                    print("  - Add a pacer (good bowling strike rate)")
         
         return accuracy_percentage
 
 def main():
-    # Initialize the selector - set verbose to False to hide debug output
-    selector = Dream11TeamSelector(verbose=False)
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description='Dream11 Team Selection')
+    parser.add_argument('--verbose', action='store_true', help='Enable verbose output')
+    args = parser.parse_args()
+    
+    # Initialize the selector with the verbose flag from command line
+    selector = Dream11TeamSelector(verbose=args.verbose)
     
     # Run the pipeline
     selector.run_pipeline()

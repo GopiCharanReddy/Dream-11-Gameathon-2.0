@@ -1,0 +1,12 @@
+1,credits,role,player_name,team,IsPlaying,lineup_order,is_batsman,is_bowler,is_allrounder,is_wicketkeeper,recent_runs,recent_wickets,strike_rate,economy_rate,boundary_rate,death_over_economy,batting_avg,bowling_avg,predicted_score,is_captain,is_vice_captain,Captain,Vice Captain
+8,8.5,AR,Abhishek Sharma,SRH,PLAYING,2,0,0,1,0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,11.818966815901542,True,False,True,False
+13,9.0,WK,Jos Buttler,GT,PLAYING,3,1,0,0,1,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,11.35500333125582,False,True,False,True
+3,7.5,AR,Shahrukh Khan,GT,PLAYING,5,0,0,1,0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,11.286771450922709,False,False,False,False
+14,9.0,BAT,Heinrich Klaasen,SRH,PLAYING,5,1,0,0,0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,11.195470237436929,False,False,False,False
+37,8.5,BOWL,Rashid-Khan,GT,PLAYING,6,0,1,0,0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,11.143642310916453,False,False,False,False
+10,8.0,AR,K Nitish Reddy,SRH,PLAYING,4,0,0,1,0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,11.123705687427304,False,False,False,False
+18,9.0,BAT,Travis Head,SRH,PLAYING,1,1,0,0,0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,11.024718384019728,False,False,False,False
+30,8.5,BOWL,Mohammed Shami,SRH,PLAYING,11,0,1,0,0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,10.864779860055553,False,False,False,False
+26,8.5,BAT,Sai Sudharsan,GT,PLAYING,2,1,0,0,0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,10.679308049205233,False,False,False,False
+31,8.0,BOWL,Pat Cummins,SRH,PLAYING,8,0,1,0,0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,10.353279808565272,False,False,False,False
+38,8.0,BOWL,Mohammed Siraj,GT,PLAYING,9,0,1,0,0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,10.339537972049133,False,False,False,False

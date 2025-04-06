@@ -1,0 +1,12 @@
+player_name,role,team,credits,lineup_order,predicted_score,Captain,Vice Captain
+Prasidh Krishna,BOWL,GT,7.5,10,9.8706319273677,True,False
+Philip Salt,WK,RCB,8.5,2,9.722217680327894,False,True
+Josh Hazlewood,BOWL,RCB,8.5,10,9.651689608424329,False,False
+Virat Kohli,BAT,RCB,9.0,1,9.486891029283402,False,False
+Yash Dayal,BOWL,RCB,7.0,11,9.361429903668153,False,False
+Rajat Patidar,BAT,RCB,8.0,4,9.294413956523009,False,False
+Shubman Gill,BAT,GT,9.0,1,8.844687735544658,False,False
+Sai Sudharsan,BAT,GT,8.5,2,8.596700210475332,False,False
+Jitesh Sharma,BAT,RCB,7.5,6,8.308645068852417,False,False
+Krunal Pandya,AR,RCB,7.5,8,8.159723552893274,False,False
+Mohammed Siraj,BOWL,GT,8.0,9,7.490165468788893,False,False

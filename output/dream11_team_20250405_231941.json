@@ -1,0 +1,132 @@
+{
+  "summary": {
+    "total_credits": 88.5,
+    "total_predicted_score": 98.74832482831555,
+    "role_distribution": {
+      "BOWL": 6,
+      "BAT": 3,
+      "WK": 1,
+      "AR": 1
+    },
+    "team_distribution": {
+      "GT": 6,
+      "RCB": 5
+    },
+    "captain": "Bhuvneshwar Kumar",
+    "vice_captain": "Philip Salt",
+    "timestamp": "20250405_231941",
+    "model_accuracy": 75.08
+  },
+  "team": [
+    {
+      "player_name": "Bhuvneshwar Kumar",
+      "role": "BOWL",
+      "team": "RCB",
+      "credits": 8.0,
+      "lineup_order": 9,
+      "predicted_score": 9.938093024053405,
+      "Captain": true,
+      "Vice Captain": false
+    },
+    {
+      "player_name": "Philip Salt",
+      "role": "WK",
+      "team": "RCB",
+      "credits": 8.5,
+      "lineup_order": 2,
+      "predicted_score": 9.63390217938668,
+      "Captain": false,
+      "Vice Captain": true
+    },
+    {
+      "player_name": "Mohammed Siraj",
+      "role": "BOWL",
+      "team": "GT",
+      "credits": 8.0,
+      "lineup_order": 9,
+      "predicted_score": 9.395638458880692,
+      "Captain": false,
+      "Vice Captain": false
+    },
+    {
+      "player_name": "Rashid-Khan",
+      "role": "BOWL",
+      "team": "GT",
+      "credits": 9.0,
+      "lineup_order": 7,
+      "predicted_score": 9.213327802251888,
+      "Captain": false,
+      "Vice Captain": false
+    },
+    {
+      "player_name": "Sai Sudharsan",
+      "role": "BAT",
+      "team": "GT",
+      "credits": 8.5,
+      "lineup_order": 2,
+      "predicted_score": 9.05482310691772,
+      "Captain": false,
+      "Vice Captain": false
+    },
+    {
+      "player_name": "Josh Hazlewood",
+      "role": "BOWL",
+      "team": "RCB",
+      "credits": 8.5,
+      "lineup_order": 10,
+      "predicted_score": 8.957020403907249,
+      "Captain": false,
+      "Vice Captain": false
+    },
+    {
+      "player_name": "Prasidh Krishna",
+      "role": "BOWL",
+      "team": "GT",
+      "credits": 7.5,
+      "lineup_order": 10,
+      "predicted_score": 8.695806425783934,
+      "Captain": false,
+      "Vice Captain": false
+    },
+    {
+      "player_name": "Yash Dayal",
+      "role": "BOWL",
+      "team": "RCB",
+      "credits": 7.0,
+      "lineup_order": 11,
+      "predicted_score": 8.688174637891024,
+      "Captain": false,
+      "Vice Captain": false
+    },
+    {
+      "player_name": "Jos Buttler",
+      "role": "BAT",
+      "team": "GT",
+      "credits": 9.0,
+      "lineup_order": 3,
+      "predicted_score": 8.658763037402608,
+      "Captain": false,
+      "Vice Captain": false
+    },
+    {
+      "player_name": "Rahul Tewatia",
+      "role": "AR",
+      "team": "GT",
+      "credits": 7.0,
+      "lineup_order": 5,
+      "predicted_score": 8.258258415976304,
+      "Captain": false,
+      "Vice Captain": false
+    },
+    {
+      "player_name": "Tim David",
+      "role": "BAT",
+      "team": "RCB",
+      "credits": 7.5,
+      "lineup_order": 7,
+      "predicted_score": 8.254517335864048,
+      "Captain": false,
+      "Vice Captain": false
+    }
+  ]
+}

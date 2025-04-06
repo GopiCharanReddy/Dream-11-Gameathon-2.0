@@ -1,0 +1,142 @@
+{
+  "summary": {
+    "total_credits": 86.5,
+    "total_predicted_score": 96.43692325575046,
+    "role_distribution": {
+      "BAT": 4,
+      "AR": 3,
+      "BOWL": 3,
+      "WK": 1
+    },
+    "team_distribution": {
+      "GT": 7,
+      "SRH": 4
+    },
+    "captain": "K Nitish Reddy",
+    "vice_captain": "Rahul Tewatia",
+    "timestamp": "20250406_202901"
+  },
+  "team": [
+    {
+      "player_name": "K Nitish Reddy",
+      "role": "AR",
+      "team": "SRH",
+      "credits": 8.0,
+      "lineup_order": 4,
+      "predicted_score": 9.922457808165273,
+      "Captain": true,
+      "Vice Captain": false,
+      "strategy_score": NaN
+    },
+    {
+      "player_name": "Rahul Tewatia",
+      "role": "AR",
+      "team": "GT",
+      "credits": 7.0,
+      "lineup_order": 4,
+      "predicted_score": 9.769592740292776,
+      "Captain": false,
+      "Vice Captain": true,
+      "strategy_score": NaN
+    },
+    {
+      "player_name": "Shahrukh Khan",
+      "role": "AR",
+      "team": "GT",
+      "credits": 7.5,
+      "lineup_order": 5,
+      "predicted_score": 9.25440428730859,
+      "Captain": false,
+      "Vice Captain": false,
+      "strategy_score": NaN
+    },
+    {
+      "player_name": "Ishant Sharma",
+      "role": "BOWL",
+      "team": "GT",
+      "credits": 7.0,
+      "lineup_order": 11,
+      "predicted_score": 9.232690574341257,
+      "Captain": false,
+      "Vice Captain": false,
+      "strategy_score": NaN
+    },
+    {
+      "player_name": "Ravisrinivasan Sai Kishore",
+      "role": "BOWL",
+      "team": "GT",
+      "credits": 7.5,
+      "lineup_order": 8,
+      "predicted_score": 9.04876033204414,
+      "Captain": false,
+      "Vice Captain": false,
+      "strategy_score": NaN
+    },
+    {
+      "player_name": "Sai Sudharsan",
+      "role": "BAT",
+      "team": "GT",
+      "credits": 8.5,
+      "lineup_order": 2,
+      "predicted_score": 8.769385293294043,
+      "Captain": false,
+      "Vice Captain": false,
+      "strategy_score": NaN
+    },
+    {
+      "player_name": "Jos Buttler",
+      "role": "WK",
+      "team": "GT",
+      "credits": 9.0,
+      "lineup_order": 3,
+      "predicted_score": 8.70087622378325,
+      "Captain": false,
+      "Vice Captain": false,
+      "strategy_score": NaN
+    },
+    {
+      "player_name": "Pat Cummins",
+      "role": "BOWL",
+      "team": "SRH",
+      "credits": 8.0,
+      "lineup_order": 8,
+      "predicted_score": 8.36459351499197,
+      "Captain": false,
+      "Vice Captain": false,
+      "strategy_score": NaN
+    },
+    {
+      "player_name": "Travis Head",
+      "role": "BAT",
+      "team": "SRH",
+      "credits": 9.0,
+      "lineup_order": 1,
+      "predicted_score": 8.202368306822745,
+      "Captain": false,
+      "Vice Captain": false,
+      "strategy_score": NaN
+    },
+    {
+      "player_name": "Sai Sudharsan",
+      "role": "BAT",
+      "team": "GT",
+      "credits": 8.5,
+      "lineup_order": 2,
+      "predicted_score": 7.730645177487258,
+      "Captain": false,
+      "Vice Captain": false,
+      "strategy_score": NaN
+    },
+    {
+      "player_name": "Aniket Verma",
+      "role": "BAT",
+      "team": "SRH",
+      "credits": 6.5,
+      "lineup_order": 6,
+      "predicted_score": 7.441148997219153,
+      "Captain": false,
+      "Vice Captain": false,
+      "strategy_score": 7.441148997219153
+    }
+  ]
+}

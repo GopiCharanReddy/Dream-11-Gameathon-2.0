@@ -1,0 +1,12 @@
+player_name,role,team,credits,lineup_order,predicted_score,Captain,Vice Captain
+Zeeshan Ansari,BOWL,SRH,6.0,9,9.893398782644818,True,False
+Sai Sudharsan,BAT,GT,8.5,2,9.880894611910698,False,True
+Heinrich Klaasen,BAT,SRH,9.0,5,9.559230617952217,False,False
+Sai Sudharsan,BAT,GT,8.5,2,9.501087752387676,False,False
+K Nitish Reddy,AR,SRH,8.0,4,9.490611281003657,False,False
+Jos Buttler,WK,GT,9.0,3,9.459473747226408,False,False
+Prasidh Krishna,BOWL,GT,7.5,10,8.732903357082664,False,False
+Travis Head,BAT,SRH,9.0,1,8.496798188397038,False,False
+Ravisrinivasan Sai Kishore,BOWL,GT,7.5,8,8.489417362202772,False,False
+Washington Sundar,AR,GT,7.0,7,8.188232247926633,False,False
+Abhishek Sharma,AR,SRH,8.5,2,8.03911240100293,False,False

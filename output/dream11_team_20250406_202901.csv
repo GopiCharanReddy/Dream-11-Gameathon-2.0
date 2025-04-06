@@ -1,0 +1,12 @@
+player_name,role,team,credits,lineup_order,predicted_score,Captain,Vice Captain,strategy_score
+K Nitish Reddy,AR,SRH,8.0,4,9.922457808165273,True,False,
+Rahul Tewatia,AR,GT,7.0,4,9.769592740292776,False,True,
+Shahrukh Khan,AR,GT,7.5,5,9.25440428730859,False,False,
+Ishant Sharma,BOWL,GT,7.0,11,9.232690574341257,False,False,
+Ravisrinivasan Sai Kishore,BOWL,GT,7.5,8,9.04876033204414,False,False,
+Sai Sudharsan,BAT,GT,8.5,2,8.769385293294043,False,False,
+Jos Buttler,WK,GT,9.0,3,8.70087622378325,False,False,
+Pat Cummins,BOWL,SRH,8.0,8,8.36459351499197,False,False,
+Travis Head,BAT,SRH,9.0,1,8.202368306822745,False,False,
+Sai Sudharsan,BAT,GT,8.5,2,7.730645177487258,False,False,
+Aniket Verma,BAT,SRH,6.5,6,7.441148997219153,False,False,7.441148997219153

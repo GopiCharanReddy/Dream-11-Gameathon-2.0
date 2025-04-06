@@ -1,0 +1,132 @@
+{
+  "summary": {
+    "total_credits": 93.0,
+    "total_predicted_score": 87.54766205777734,
+    "role_distribution": {
+      "BAT": 5,
+      "BOWL": 4,
+      "WK": 1,
+      "AR": 1
+    },
+    "team_distribution": {
+      "SRH": 6,
+      "GT": 5
+    },
+    "captain": "Jos Buttler",
+    "vice_captain": "Prasidh Krishna",
+    "timestamp": "20250406_201427",
+    "model_accuracy": 72.54
+  },
+  "team": [
+    {
+      "player_name": "Jos Buttler",
+      "role": "WK",
+      "team": "GT",
+      "credits": 9.0,
+      "lineup_order": 3,
+      "predicted_score": 8.754278485885937,
+      "Captain": true,
+      "Vice Captain": false
+    },
+    {
+      "player_name": "Prasidh Krishna",
+      "role": "BOWL",
+      "team": "GT",
+      "credits": 7.5,
+      "lineup_order": 10,
+      "predicted_score": 8.711275817885795,
+      "Captain": false,
+      "Vice Captain": true
+    },
+    {
+      "player_name": "Pat Cummins",
+      "role": "BOWL",
+      "team": "SRH",
+      "credits": 8.0,
+      "lineup_order": 8,
+      "predicted_score": 8.658836821773725,
+      "Captain": false,
+      "Vice Captain": false
+    },
+    {
+      "player_name": "Rashid-Khan",
+      "role": "BOWL",
+      "team": "GT",
+      "credits": 8.5,
+      "lineup_order": 6,
+      "predicted_score": 8.412772428135025,
+      "Captain": false,
+      "Vice Captain": false
+    },
+    {
+      "player_name": "K Nitish Reddy",
+      "role": "AR",
+      "team": "SRH",
+      "credits": 8.0,
+      "lineup_order": 4,
+      "predicted_score": 8.212668634742457,
+      "Captain": false,
+      "Vice Captain": false
+    },
+    {
+      "player_name": "Ishan Kishan",
+      "role": "BAT",
+      "team": "SRH",
+      "credits": 8.0,
+      "lineup_order": 3,
+      "predicted_score": 8.148910836203552,
+      "Captain": false,
+      "Vice Captain": false
+    },
+    {
+      "player_name": "Mohammed Shami",
+      "role": "BOWL",
+      "team": "SRH",
+      "credits": 8.5,
+      "lineup_order": 11,
+      "predicted_score": 7.509491853251579,
+      "Captain": false,
+      "Vice Captain": false
+    },
+    {
+      "player_name": "Sai Sudharsan",
+      "role": "BAT",
+      "team": "GT",
+      "credits": 8.5,
+      "lineup_order": 2,
+      "predicted_score": 7.495321429638658,
+      "Captain": false,
+      "Vice Captain": false
+    },
+    {
+      "player_name": "Shubman Gill",
+      "role": "BAT",
+      "team": "GT",
+      "credits": 9.0,
+      "lineup_order": 1,
+      "predicted_score": 7.403476717393145,
+      "Captain": false,
+      "Vice Captain": false
+    },
+    {
+      "player_name": "Travis Head",
+      "role": "BAT",
+      "team": "SRH",
+      "credits": 9.0,
+      "lineup_order": 1,
+      "predicted_score": 7.188495834124071,
+      "Captain": false,
+      "Vice Captain": false
+    },
+    {
+      "player_name": "Heinrich Klaasen",
+      "role": "BAT",
+      "team": "SRH",
+      "credits": 9.0,
+      "lineup_order": 5,
+      "predicted_score": 7.0521331987433875,
+      "Captain": false,
+      "Vice Captain": false
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+player_name,role,team,credits,lineup_order,predicted_score,Captain,Vice Captain
+Pat Cummins,BOWL,SRH,8.0,8,9.647090732586431,True,False
+Jos Buttler,BAT,GT,9.0,3,9.491804418204651,False,True
+Shahrukh Khan,AR,GT,7.5,5,8.89482044906858,False,False
+Ishant Sharma,BOWL,GT,7.0,11,8.676928138777223,False,False
+Shubman Gill,BAT,GT,9.0,1,8.590117797630779,False,False
+Sai Sudharsan,BAT,GT,8.5,2,8.53675971210283,False,False
+Washington Sundar,AR,GT,7.0,7,8.489397995412146,False,False
+Travis Head,BAT,SRH,9.0,1,8.44055909743581,False,False
+Abhishek Sharma,AR,SRH,8.5,2,7.9469597634235285,False,False
+Ravisrinivasan Sai Kishore,BOWL,GT,7.5,8,7.844108240538699,False,False
+Ishan Kishan,WK,SRH,8.0,3,7.510549145880184,False,False

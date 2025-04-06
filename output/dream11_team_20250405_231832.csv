@@ -1,0 +1,12 @@
+player_name,role,team,credits,lineup_order,predicted_score,Captain,Vice Captain
+Josh Hazlewood,BOWL,RCB,8.5,10,9.943999612347042,True,False
+Rashid-Khan,BOWL,GT,9.0,7,9.880219226404515,False,True
+Liam Livingstone,AR,RCB,8.0,5,9.806432324927222,False,False
+Virat Kohli,BAT,RCB,9.0,1,9.779372418139896,False,False
+Yash Dayal,BOWL,RCB,7.0,11,9.564580328814547,False,False
+Rahul Tewatia,AR,GT,7.0,5,8.858074178230797,False,False
+Sai Sudharsan,BAT,GT,8.5,2,8.832316981171337,False,False
+Tim David,BAT,RCB,7.5,7,8.762680206103596,False,False
+Mohammed Siraj,BOWL,GT,8.0,9,8.464776536776442,False,False
+Shubman Gill,BAT,GT,9.0,1,8.042097745128341,False,False
+Philip Salt,WK,RCB,8.5,2,6.226118675270724,False,False
