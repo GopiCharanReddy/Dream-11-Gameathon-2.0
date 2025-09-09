@@ -1,6 +1,5 @@
 # AI Dream11 Team Selector
 
-HEAD
 An AI-powered Dream11 team selection system that uses historical player data and machine learning to predict player performance and optimize team selection.
 
 ## Features
