@@ -1,6 +1,6 @@
 # AI Dream11 Team Selector
 
-<<<<<<< HEAD
+HEAD
 An AI-powered Dream11 team selection system that uses historical player data and machine learning to predict player performance and optimize team selection.
 
 ## Features
@@ -12,8 +12,6 @@ An AI-powered Dream11 team selection system that uses historical player data and
 - Captain and vice-captain selection
 - Performance evaluation metrics
 
-=======
->>>>>>> 5191e49dbd8593cfa27dd05a7fb16f254d2bcb1d
 ## Prerequisites
 
 - Python 3.8 or higher
